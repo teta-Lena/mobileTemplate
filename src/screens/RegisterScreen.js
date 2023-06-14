@@ -20,12 +20,7 @@ const validRegister = yup.object().shape({
     .min(8, ({ min }) => `Password must be atleast ${min} characters`)
     .max(32),
 });
-//add confirmPassword
-// confirmPassword: yup
-// .string()
-// .oneOf([yup.ref('password')], 'Passwords do not match')
-// .required('Confirm password is required'),
-// })
+
 const RegisterScreen = () => {
   return (
     <View className="h-full bg-[#1a3788]">
@@ -38,7 +33,18 @@ const RegisterScreen = () => {
           phone: "",
           password: "",
         }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={async (values) => {
+          try {
+            const res = await fetch("192.168.0.159:3000/api/users/register", {
+              method: "put",
+              body: values,
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+          } catch (e) {
+            console.log(e.message);
+          }
+        }}
       >
         {({ handleSubmit, isValid }) => (
           <>

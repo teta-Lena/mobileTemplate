@@ -180,3 +180,11 @@ password regex
       /[!@#$%^&*()\-_"=+{}; :,<.>]/,
       "Password must have a special character"
     )
+
+
+    //add confirmPassword REGEX
+// confirmPassword: yup
+// .string()
+// .oneOf([yup.ref('password')], 'Passwords do not match')
+// .required('Confirm password is required'),
+// })
