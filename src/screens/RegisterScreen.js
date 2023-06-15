@@ -35,14 +35,21 @@ const RegisterScreen = () => {
         }}
         onSubmit={async (values) => {
           try {
-            const res = await fetch("192.168.0.159:3000/api/users/register", {
-              method: "put",
-              body: values,
-            });
-            const result = await response.json();
+            const res = await fetch(
+              "http://192.168.8.118:3000/api/users/register",
+              {
+                method: "POST",
+                body: JSON.stringify(values),
+                headers: {
+                  "Content-Type": "application/json", // Set the content type header
+                },
+              }
+            );
+            const result = await res.json();
             console.log("Success:", result);
           } catch (e) {
-            console.log(e.message);
+            console.log(e);
+      
           }
         }}
       >
@@ -98,7 +105,7 @@ const RegisterScreen = () => {
                       title="Sign up"
                       buttonStyle={style.btn}
                       onPress={handleSubmit}
-                      //   disabled={!isValid}
+                      disabled={!isValid}
                     />
                   </View>
                 </View>
