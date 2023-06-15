@@ -188,3 +188,13 @@ password regex
 // .oneOf([yup.ref('password')], 'Passwords do not match')
 // .required('Confirm password is required'),
 // })
+
+            Toast.show({
+              type: "Error",
+              text1: "Email address is already in use!",
+              // text2: e,
+              visibilityTime: 2000, // Duration of the toast message
+              autoHide: true,
+              topOffset: 30,
+              bottomOffset: 40,
+            });

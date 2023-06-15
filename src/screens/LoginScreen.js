@@ -25,7 +25,29 @@ const LoginScreen = ({ navigation }) => {
             email: "",
             password: "",
           }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={async (values) => {
+            try {
+              const res = await fetch(
+                "http://192.168.8.151:3000/api/users/login",
+                {
+                  method: "POST",
+                  body: JSON.stringify(values),
+                  headers: {
+                    "Content-Type": "application/json", // Set the content type header
+                  },
+                }
+              );
+              const result = await res.json();
+              console.log(result);
+              if (result.error) {
+                return console.log("Error");
+              } else {
+                navigation.navigate("dashboard", { token: result.token });
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          }}
         >
           {({
             handleChange,
@@ -51,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
                         name="email"
                         onBlur={handleBlur("email")}
                         value={values.email}
-                        onChange={handleChange("email")}
+                        onChangeText={handleChange("email")}
                         placeholder="Enter your email"
                         className="rounded border-2 border-gray-200 py-2 text-left px-4 w-[90%]"
                       />
@@ -63,7 +85,7 @@ const LoginScreen = ({ navigation }) => {
                     <View className="items-center w-full  my-1">
                       <TextInput
                         onBlur={handleBlur("password")}
-                        onChange={handleChange("password")}
+                        onChangeText={handleChange("password")}
                         name="password"
                         value={values.password}
                         secureTextEntry

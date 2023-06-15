@@ -1,10 +1,19 @@
 import React from "react";
-import { ScrollView, View, Text, TextInput, StyleSheet } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ToastAndroid,
+} from "react-native";
 import { Button } from "react-native-elements";
 import { Field, Formik } from "formik";
 import * as yup from "yup";
-
 import CustomInput from "../components/CustomInput";
+
+// import Toast from "react-native-toast-message";
+import Toast from "react-native-simple-toast";
 
 const validRegister = yup.object().shape({
   firstname: yup.string().required().min(2),
@@ -36,7 +45,7 @@ const RegisterScreen = () => {
         onSubmit={async (values) => {
           try {
             const res = await fetch(
-              "http://192.168.8.118:3000/api/users/register",
+              "http://192.168.8.151:3000/api/users/register",
               {
                 method: "POST",
                 body: JSON.stringify(values),
@@ -46,10 +55,9 @@ const RegisterScreen = () => {
               }
             );
             const result = await res.json();
-            console.log("Success:", result);
+            console.log(result);
           } catch (e) {
             console.log(e);
-      
           }
         }}
       >
