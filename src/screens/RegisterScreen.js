@@ -30,7 +30,7 @@ const validRegister = yup.object().shape({
     .max(32),
 });
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   return (
     <View className="h-full bg-[#1a3788]">
       <Formik
@@ -45,7 +45,7 @@ const RegisterScreen = () => {
         onSubmit={async (values) => {
           try {
             const res = await fetch(
-              "http://192.168.8.151:3000/api/users/register",
+              "http://192.168.1.140:3000/api/users/register",
               {
                 method: "POST",
                 body: JSON.stringify(values),
@@ -55,7 +55,11 @@ const RegisterScreen = () => {
               }
             );
             const result = await res.json();
-            console.log(result);
+            if (result.error) {
+              return console.log(result.error);
+            } else {
+              navigation.navigate("Login");
+            }
           } catch (e) {
             console.log(e);
           }

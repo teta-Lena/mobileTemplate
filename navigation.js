@@ -1,16 +1,17 @@
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
+
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import DisplayScreen from "./src/screens/DisplayScreen";
-const Navigator = createStackNavigator(
+
+const Navigation = createStackNavigator(
   {
     Welcome: WelcomeScreen,
     Login: LoginScreen,
     Register: RegisterScreen,
-    dashboard :DisplayScreen
-    
+    Dashboard: DisplayScreen,
   },
   {
     initialRouteName: "Welcome",
@@ -22,4 +23,4 @@ const Navigator = createStackNavigator(
   }
 );
 
-export default createAppContainer(Navigator);
+export default createAppContainer(Navigation);

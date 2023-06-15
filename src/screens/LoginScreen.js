@@ -1,5 +1,11 @@
-import React from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -16,6 +22,9 @@ const validLogin = yup.object().shape({
 });
 
 const LoginScreen = ({ navigation }) => {
+  const [error, setError] = useState("");
+  const [isLoading, setisLoading] = useState(false);
+
   return (
     <View className="container w-full h-full">
       <View className="h-full bg-[#1a3788]">
@@ -27,8 +36,9 @@ const LoginScreen = ({ navigation }) => {
           }}
           onSubmit={async (values) => {
             try {
+              setisLoading(true);
               const res = await fetch(
-                "http://192.168.8.151:3000/api/users/login",
+                "http://192.168.1.140:3000/api/users/login",
                 {
                   method: "POST",
                   body: JSON.stringify(values),
@@ -40,9 +50,17 @@ const LoginScreen = ({ navigation }) => {
               const result = await res.json();
               console.log(result);
               if (result.error) {
-                return console.log("Error");
+                setisLoading(false);
+                console.log("Error");
+                setError(result.error);
+                return;
               } else {
-                navigation.navigate("dashboard", { token: result.token });
+                setisLoading(false);
+                const user = JSON.stringify(values);
+                navigation.navigate("Dashboard", {
+                  token: result.token,
+                  user: result.user,
+                });
               }
             } catch (e) {
               console.log(e);
@@ -97,9 +115,21 @@ const LoginScreen = ({ navigation }) => {
                       )}
                     </View>
 
-                    <View className="mx-4 my-5">
+                    <View>
+                      <Text className="text-red-500 mt-2 mx-5 capitalize">
+                        {error}
+                      </Text>
+                    </View>
+
+                    <View className="mx-5 mt-4 mb-2">
                       <Button
-                        title="Log in"
+                        title={
+                          isLoading ? (
+                            <ActivityIndicator color={"#fff"} />
+                          ) : (
+                            "Log in"
+                          )
+                        }
                         buttonStyle={style.btn}
                         onPress={handleSubmit}
                         disabled={!isValid}
