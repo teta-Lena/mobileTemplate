@@ -9,6 +9,8 @@ import {
 import { Button, Icon } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
+import * as SecureStore from "expo-secure-store";
+import API_URL, { sendRequest } from "../utils/requestHandling";
 
 // import Login from "../components/Login";
 
@@ -38,7 +40,7 @@ const LoginScreen = ({ navigation }) => {
             try {
               setisLoading(true);
               const res = await fetch(
-                "http://192.168.1.140:3000/api/users/login",
+                "http://192.168.0.114:3000/api/v1/u/login",
                 {
                   method: "POST",
                   body: JSON.stringify(values),
@@ -47,14 +49,22 @@ const LoginScreen = ({ navigation }) => {
                   },
                 }
               );
+
               const result = await res.json();
-              console.log(result);
+
               if (result.error) {
                 setisLoading(false);
                 console.log("Error");
                 setError(result.error);
                 return;
               } else {
+                if (result.user.role != "voter") {
+                  setError("You are not allowed to use our app");
+                  // navigation.navigate("Welcome")
+                  setisLoading(false);
+                  return error;
+                }
+                await SecureStore.setItemAsync("token", result.token);
                 setisLoading(false);
                 const user = JSON.stringify(values);
                 navigation.navigate("Dashboard", {
@@ -64,6 +74,7 @@ const LoginScreen = ({ navigation }) => {
               }
             } catch (e) {
               console.log(e);
+              setError(e.message);
             }
           }}
         >
@@ -116,9 +127,11 @@ const LoginScreen = ({ navigation }) => {
                     </View>
 
                     <View>
-                      <Text className="text-red-500 mt-2 mx-5 capitalize">
-                        {error}
-                      </Text>
+                      {error && (
+                        <Text className="text-red-500 mt-2 mx-5 capitalize">
+                          {error}
+                        </Text>
+                      )}
                     </View>
 
                     <View className="mx-5 mt-4 mb-2">
@@ -135,40 +148,20 @@ const LoginScreen = ({ navigation }) => {
                         disabled={!isValid}
                       />
                     </View>
-                    <View className="w-full h-[4%] flex flex-row">
-                      <View className="w-[40%] border-solid border border-black m-auto" />
-                      <Text>OR</Text>
-                      <View className="w-[40%] border-solid border borqder-black m-auto" />
-                    </View>
-                    <View className="w-full h-[30%] mt-2">
-                      <View className="mx-4 my-1 ">
-                        {/* <Icon type="material" name="facebook" /> */}
-                        <Button
-                          title="Login with Facebook"
-                          buttonStyle={style.btn}
-                        />
-                      </View>
 
-                      <View className="mx-4 my-1 ">
-                        <Button
-                          title="Login with Google"
-                          buttonStyle={style.gbtn}
-                        />
-                      </View>
-
-                      <View className="flex-row justify-center my-4">
-                        <Text> Don't have an account ....</Text>
-                        <Text
-                          className="text-blue-800"
-                          onPress={() => navigation.navigate("Register")}
-                        >
-                          Register
-                        </Text>
-                      </View>
+                    <View className="flex-row justify-center my-4">
+                      <Text> Don't have an account ....</Text>
+                      <Text
+                        className="text-blue-800"
+                        onPress={() => navigation.navigate("Register")}
+                      >
+                        Register
+                      </Text>
                     </View>
                   </View>
                 </View>
               </View>
+              {/* </View> */}
             </>
           )}
         </Formik>
