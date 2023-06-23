@@ -5,12 +5,14 @@ import {
   ScrollView,
   Text,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
-import { Card } from "react-native-elements";
+// import { Card } from "react-native-elements";
+// import { Button } from "react-native-elements";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { useIsFocused } from "@react-navigation/native";
-import { Avatar, Button, Title, Paragraph } from "react-native-paper";
+import { Avatar, Card, Title, Paragraph, Button } from "react-native-paper";
 
 const VotingScreen = ({ navigation }) => {
   const [user, setUser] = useState({});
@@ -42,6 +44,7 @@ const VotingScreen = ({ navigation }) => {
       );
       if (res.error || candidateResults.error) {
         setError(res.error || candidateResults.error);
+        console.log(res.error);
         setisLoading(false);
         return;
       } else {
@@ -49,12 +52,46 @@ const VotingScreen = ({ navigation }) => {
         const candidateData = await candidateResults.json();
 
         setCandidates(candidateData?.data?.docs || []);
-        console.log(candidates);
+        // console.log(candidates);
         setUser(data.user);
         setisLoading(false);
       }
     } catch (e) {
       setError(e.message);
+    }
+  };
+  const handleVote = async (candidate) => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
+
+      const body = JSON.stringify({ user: user._id, candidate });
+      console.log(user._id);
+
+      let response = await fetch("http://192.168.0.114:3000/api/v1/v", {
+        method: "POST",
+        body: body,
+        headers: headers,
+      });
+      console.log(response);
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        setError(errorResponse.message || "Error occurred when voting");
+        return error;
+      }
+
+      response = await fetch("http://192.168.0.114:3000/api/v1/c", {
+        headers: headers,
+      });
+
+      const candidateData = await response.json();
+      // console.log(candidateData);
+      setCandidates(candidateData?.data?.docs || []);
+    } catch (error) {
+      setError(error.message || "Error occurred when voting");
     }
   };
 
@@ -63,7 +100,7 @@ const VotingScreen = ({ navigation }) => {
   }, [isFocused]);
 
   return (
-    <SafeAreaView>
+    <ScrollView>
       <View className="flex flex-col items-center mt-20">
         <Text className="text-md">Welcome to the Voting System</Text>
         {isLoading ? (
@@ -80,7 +117,7 @@ const VotingScreen = ({ navigation }) => {
         ) : (
           <>
             {candidates?.map((el) => (
-              <View>
+              <View key={el._id}>
                 <Card>
                   {el.profilePicture && el.profilePicture !== "" ? (
                     <Card.Cover source={{ uri: el.profilePicture }} />
@@ -91,7 +128,7 @@ const VotingScreen = ({ navigation }) => {
                     title={el.names}
                     subtitle={
                       error !== "" ? (
-                        <Text style={tw`mt-4 text-red-500 text-center`}>
+                        <Text className="mt-4 text-red-500 text-center">
                           {error}
                         </Text>
                       ) : (
@@ -107,6 +144,7 @@ const VotingScreen = ({ navigation }) => {
                       onPress={() => {
                         handleVote(el._id);
                       }}
+                      style={styles.btn}
                     >
                       Vote
                     </Button>
@@ -117,8 +155,16 @@ const VotingScreen = ({ navigation }) => {
           </>
         )}
       </SafeAreaView>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
+const styles = StyleSheet.create({
+  btn: {
+    width: "30%",
+    borderRadius: 5,
+    backgroundColor: "#1a3788",
+    margin: 5,
+  },
+});
 export default VotingScreen;
