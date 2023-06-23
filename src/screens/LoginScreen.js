@@ -10,7 +10,7 @@ import { Button, Icon } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
 import * as SecureStore from "expo-secure-store";
-import API_URL, { sendRequest } from "../utils/requestHandling";
+import API_URL from "../utils/requestHandling";
 
 // import Login from "../components/Login";
 
@@ -39,16 +39,13 @@ const LoginScreen = ({ navigation }) => {
           onSubmit={async (values) => {
             try {
               setisLoading(true);
-              const res = await fetch(
-                "http://192.168.0.114:3000/api/v1/u/login",
-                {
-                  method: "POST",
-                  body: JSON.stringify(values),
-                  headers: {
-                    "Content-Type": "application/json", // Set the content type header
-                  },
-                }
-              );
+              const res = await fetch(`${API_URL}/api/v1/u/login`, {
+                method: "POST",
+                body: JSON.stringify(values),
+                headers: {
+                  "Content-Type": "application/json", // Set the content type header
+                },
+              });
 
               const result = await res.json();
 

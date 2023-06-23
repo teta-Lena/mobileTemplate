@@ -2,8 +2,8 @@
 
 // import axios from "axios";
 
-// const API_URL = "http://192.168.0.114:3000";
-// export default API_URL;
+const API_URL = "http://192.168.0.2:3000";
+export default API_URL;
 
 // export const sendRequest = async (api, method, payload = {}) => {
 //   const token = await SecureStore.getItem("token");

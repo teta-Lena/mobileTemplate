@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList, ActivityIndicator, Text } from "react-native";
 import { Button } from "react-native-elements";
+import API_URL from "../utils/requestHandling";
 // import axios from "axios";
 
 const AllUsers = ({ navigation }) => {
@@ -11,7 +12,7 @@ const AllUsers = ({ navigation }) => {
   const fetchUsers = async () => {
     try {
       setisLoading(true);
-      const res = await axios.get("http://192.168.0.114:3000/api/v1/u/users");
+      const res = await axios.get(`${API_URL}/api/v1/u/users`);
       // const res = await fetch("http://192.168.0.2:3000/api/v1/u/users");
       const data = await res.json();
       setUsers(data.users);

@@ -4,6 +4,7 @@ import { Button } from "react-native-elements";
 import { Field, Formik } from "formik";
 import * as yup from "yup";
 import CustomInput from "../components/CustomInput";
+import API_URL from "../utils/requestHandling";
 
 // import Toast from "react-native-toast-message";
 
@@ -37,16 +38,13 @@ const RegisterScreen = ({ navigation }) => {
         }}
         onSubmit={async (values) => {
           try {
-            const res = await fetch(
-              "http://192.168.1.140:3000/api/users/register",
-              {
-                method: "POST",
-                body: JSON.stringify(values),
-                headers: {
-                  "Content-Type": "application/json", // Set the content type header
-                },
-              }
-            );
+            const res = await fetch(`${API_URL}/api/users/register`, {
+              method: "POST",
+              body: JSON.stringify(values),
+              headers: {
+                "Content-Type": "application/json", // Set the content type header
+              },
+            });
             const result = await res.json();
             if (result.error) {
               return console.log(result.error);

@@ -13,6 +13,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { useIsFocused } from "@react-navigation/native";
 import { Avatar, Card, Title, Paragraph, Button } from "react-native-paper";
+import API_URL from "../utils/requestHandling";
 
 const VotingScreen = ({ navigation }) => {
   const [user, setUser] = useState({});
@@ -33,15 +34,12 @@ const VotingScreen = ({ navigation }) => {
         Authorization: `Bearer ${token}`,
       };
 
-      const res = await fetch("http://192.168.0.114:3000/api/v1/u", {
+      const res = await fetch(`${API_URL}/api/v1/u`, {
         headers: headers,
       });
-      const candidateResults = await fetch(
-        "http://192.168.0.114:3000/api/v1/c",
-        {
-          headers: headers,
-        }
-      );
+      const candidateResults = await fetch(`${API_URL}/api/v1/c`, {
+        headers: headers,
+      });
       if (res.error || candidateResults.error) {
         setError(res.error || candidateResults.error);
         console.log(res.error);
@@ -71,7 +69,7 @@ const VotingScreen = ({ navigation }) => {
       const body = JSON.stringify({ user: user._id, candidate });
       console.log(user._id);
 
-      let response = await fetch("http://192.168.0.114:3000/api/v1/v", {
+      let response = await fetch(`${API_URL}/api/v1/v`, {
         method: "POST",
         body: body,
         headers: headers,
@@ -83,7 +81,7 @@ const VotingScreen = ({ navigation }) => {
         return error;
       }
 
-      response = await fetch("http://192.168.0.114:3000/api/v1/c", {
+      response = await fetch(`${API_URL}/api/v1/c`, {
         headers: headers,
       });
 
@@ -116,25 +114,22 @@ const VotingScreen = ({ navigation }) => {
           <ActivityIndicator color="#000" className="mt-20" />
         ) : (
           <>
+            {error && (
+              <Text className="mt-4 text-red-500 text-center">{error}</Text>
+            )}
             {candidates?.map((el) => (
               <View key={el._id}>
                 <Card>
                   {el.profilePicture && el.profilePicture !== "" ? (
                     <Card.Cover source={{ uri: el.profilePicture }} />
                   ) : (
-                    <View></View>
+                    <View>
+                      <Text>We are here</Text>
+                    </View>
                   )}
                   <Card.Title
                     title={el.names}
-                    subtitle={
-                      error !== "" ? (
-                        <Text className="mt-4 text-red-500 text-center">
-                          {error}
-                        </Text>
-                      ) : (
-                        <Text>{el.total_votes || 0} votes</Text>
-                      )
-                    }
+                    subtitle={<Text>{el.total_votes || 0} votes</Text>}
                   />
                   <Card.Content>
                     <Paragraph>{el.missionStatement}</Paragraph>
